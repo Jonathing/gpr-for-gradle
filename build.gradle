@@ -1,0 +1,82 @@
+plugins {
+    id 'java-gradle-plugin'
+    id 'idea'
+    id 'eclipse'
+    id 'signing'
+    id 'maven-publish'
+    alias libs.plugins.github.packages
+    alias libs.plugins.gradleutils
+    alias libs.plugins.plugin.publish
+}
+
+final projectDisplayName = 'Gradle Github Packages Plugin'
+description = 'Gradle plugin for adding maven repos on Github Packages in one line'
+group = 'me.jonathing.gradle'
+version = '2.0.0'
+
+println "Version: $version"
+
+java.toolchain.languageVersion = JavaLanguageVersion.of 8
+
+// This is kept in here and not in settings.gradle due github-packages plugin 1.0
+repositories {
+    mavenCentral()
+    maven githubPackage.invoke('remal-gradle-api/packages')
+}
+
+dependencies {
+    compileOnly libs.gradle
+    compileOnly libs.nulls
+}
+
+changelog {
+    fromBase()
+    publishAll = false
+}
+
+signing {
+    useGpgCmd()
+}
+
+gradlePlugin {
+//    website.set gitversion.url
+//    vcsUrl.set gitversion.url + '.git'
+    website = 'https://github.com/0ffz/gpr-for-gradle'
+    vcsUrl = 'https://github.com/0ffz/gpr-for-gradle.git'
+
+    plugins.register('github-packages') {
+        id = 'me.jonathing.gradle.github-packages'
+        implementationClass = 'me.jonathing.gradle.gpr.GithubPackagesPlugin'
+        displayName = projectDisplayName
+        description = project.description
+        tags = ['github', 'github-packages', 'dependency', 'maven', 'repository']
+    }
+}
+
+publishing {
+    publications.register('pluginMaven', MavenPublication) {
+        artifactId = project.name
+
+        pom { pom ->
+            name = projectDisplayName
+            description = project.description
+
+            gradleutils.pom.setGitHubDetails pom
+
+            licenses {
+                license gradleutils.pom.licenses.MIT
+            }
+
+            // TODO [GradleUtils] Re-evaluate active developers in GU 3.0
+            developers {
+                developer gradleutils.pom.developers.Jonathing
+            }
+        }
+    }
+
+    repositories {
+        maven gradleutils.publishingForgeMaven
+    }
+}
+
+idea.module { downloadSources = downloadJavadoc = true }
