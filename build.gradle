@@ -3,7 +3,6 @@ plugins {
     id 'idea'
     id 'eclipse'
     id 'maven-publish'
-    alias libs.plugins.github.packages
     alias libs.plugins.gradleutils
     alias libs.plugins.plugin.publish
 }
@@ -17,19 +16,13 @@ println "Version: $version"
 
 java.toolchain.languageVersion = JavaLanguageVersion.of 8
 
-// This is kept in here and not in settings.gradle due github-packages plugin 1.0
-repositories {
-    mavenCentral()
-    maven githubPackage.invoke('remal-gradle-api/packages')
-}
-
 dependencies {
     compileOnly libs.gradle
     compileOnly libs.nulls
 }
 
 changelog {
-    fromBase()
+    from '2.0'
     publishAll = false
 }
 
@@ -54,13 +47,13 @@ publishing {
             name = projectDisplayName
             description = project.description
 
-            gradleutils.pom.setGitHubDetails pom
+            // TODO [GHPackages] Re-enable in GradleUtils 3.0
+            //gradleutils.pom.setGitHubDetails pom
 
             licenses {
                 license gradleutils.pom.licenses.MIT
             }
 
-            // TODO [GradleUtils] Re-evaluate active developers in GU 3.0
             developers {
                 developer gradleutils.pom.developers.Jonathing
             }
@@ -68,7 +61,14 @@ publishing {
     }
 
     repositories {
-        maven gradleutils.publishingForgeMaven
+        maven {
+            name = 'ModdingLegacyMaven'
+            url = 'https://maven.moddinglegacy.com/repository/modding-legacy/'
+            credentials {
+                username = providers.gradleProperty('mlm.user').orElse(providers.environmentVariable('ML_USERNAME')).orNull
+                password = providers.gradleProperty('mlm.key').orElse(providers.environmentVariable('ML_TOKEN')).orNull
+            }
+        }
     }
 }
 

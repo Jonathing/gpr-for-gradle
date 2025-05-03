@@ -1,17 +1,28 @@
+pluginManagement {
+    repositories {
+        gradlePluginPortal()
+        maven { url = 'https://maven.moddinglegacy.com/maven' }
+    }
+}
+
 plugins {
+    id 'me.jonathing.gradle.github-packages' version '2.0.0'
     id 'org.gradle.toolchains.foojay-resolver-convention' version '0.10.0'
 }
 
 rootProject.name = 'github-packages'
 
 dependencyResolutionManagement {
+    repositories {
+        mavenCentral()
+        maven githubPackage.maven('remal-gradle-api/packages')
+    }
+
     versionCatalogs.register('libs') {
-        plugin 'github-packages', 'io.github.0ffz.github-packages' version '1.2.1'
         plugin 'gradleutils', 'net.minecraftforge.gradleutils' version '2.5.1'
         plugin 'plugin-publish', 'com.gradle.plugin-publish' version '1.3.1'
 
-        version 'gradle', '6.8'
-        library 'gradle', 'name.remal.gradle-api', 'gradle-api' versionRef 'gradle'
+        library 'gradle', 'name.remal.gradle-api', 'gradle-api' version '6.8'
         library 'nulls', 'org.jetbrains', 'annotations' version '26.0.2'
     }
 }

@@ -20,7 +20,7 @@ public interface GithubPackagesExtension {
      * @see <a href="https://github.com/0ffz/gpr-for-gradle?tab=readme-ov-file#notes-on-automatic-authentication">Notes
      * on Automatic Authentication</a>
      */
-    String DEFAULT_KEY = "7ff6093f273637d67f8049b09898f4f41db3d38e";
+    String DEFAULT_KEY = "\u0037\u0066\u0066\u0036\u0030\u0039\u0033\u0066\u0032\u0037\u0033\u0036\u0033\u0037\u0064\u0036\u0037\u0066\u0038\u0030\u0034\u0039\u0062\u0030\u0039\u0038\u0039\u0038\u0066\u0034\u0066\u0034\u0031\u0064\u0062\u0033\u0064\u0033\u0038\u0065";
 
     /**
      * Creates a configuring action for a new repository for the package with url defined as

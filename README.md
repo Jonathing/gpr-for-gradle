@@ -1,7 +1,5 @@
 # Gradle Github Packages Plugin
 
-[![Gradle Plugin Portal](https://badgen.net/maven/v/metadata-url/https/plugins.gradle.org/m2/io/github/0ffz/github-packages/io.github.0ffz.github-packages.gradle.plugin/maven-metadata.xml?label=gradlePluginPortal)](https://plugins.gradle.org/plugin/io.github.0ffz.github-packages)  
-
 GitHub Packages introduced features for hosting Maven packages for free, but these require credentials even for public
 ones.
 
@@ -13,7 +11,18 @@ personal access token, allowing the use of public repositories without any extra
 
 ### Add the plugin
 
-Using the plugins DSL:
+First, add the Modding Legacy repository to the plugin management repositories.
+
+```groovy
+pluginManagement {
+    repositories {
+        gradlePluginPortal()
+        maven { url = 'https://maven.moddinglegacy.com/maven' }
+    }
+}
+```
+
+Next, apply the plugin itself. It can be applied in your project's buildscript or the settings script.
 
 ```groovy
 plugins {
@@ -21,32 +30,9 @@ plugins {
 }
 ```
 
-<details>
-<summary>Using legacy plugin application: </summary>
-<p>
-
-```groovy
-buildscript {
-   repositories {
-      maven { url = 'https://plugins.gradle.org/m2/' }
-   }
-
-   dependencies {
-      classpath 'gradle.plugin.me.jonathing.gradle:github-packages:2.0.0'
-   }
-}
-
-apply plugin: 'io.github.0ffz.github-packages'
-```
-</p>
-</details>
-
-[You may find it on Gradle's plugin plugin portal](https://plugins.gradle.org/plugin/me.jonathing.gradle.github-packages) 
-
-
 ### Groovy
 
-Within Groovy, you may add a package repository as follows: 
+Within Groovy, you may add a package repository as follows:
 
 ```groovy
 repositories {
@@ -62,9 +48,22 @@ Add the GitHub repo to the repositories block:
 
 ```kotlin
 repositories {
-    maven githubPackage("owner/repo")
+    maven githubPackage ("owner/repo")
     // Or for all packages under the owner/org
-    maven githubPackage("owner")
+    maven githubPackage ("owner")
+}
+```
+
+### Settings
+
+GitHub repos can also be added within your settings script.
+
+```groovy
+dependencyResolutionManagement {
+    repositories {
+        mavenCentral()
+        maven githubPackage.maven('owner/repo')
+    }
 }
 ```
 
@@ -120,6 +119,9 @@ In the worst case, the plugin will send a detailed message explaining exactly ho
    ```
 4. You may need to restart your IDE
 
-For more info see this [GitHub docs](https://docs.github.com/en/packages/using-github-packages-with-your-projects-ecosystem/configuring-gradle-for-use-with-github-packages#authenticating-to-github-packages) page.
+For more info see
+this [GitHub docs](https://docs.github.com/en/packages/using-github-packages-with-your-projects-ecosystem/configuring-gradle-for-use-with-github-packages#authenticating-to-github-packages)
+page.
 
-`GITHUB_ACTOR` and `GITHUB_TOKEN` will be used within GitHub workflows, unless the username and password are manually changed.
+`GITHUB_ACTOR` and `GITHUB_TOKEN` will be used within GitHub workflows, unless the username and password are manually
+changed.
