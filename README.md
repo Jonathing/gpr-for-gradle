@@ -1,10 +1,13 @@
-# gpr-for-gradle (Gradle Github Packages Plugin) 
+# Gradle Github Packages Plugin
 
 [![Gradle Plugin Portal](https://badgen.net/maven/v/metadata-url/https/plugins.gradle.org/m2/io/github/0ffz/github-packages/io.github.0ffz.github-packages.gradle.plugin/maven-metadata.xml?label=gradlePluginPortal)](https://plugins.gradle.org/plugin/io.github.0ffz.github-packages)  
 
-GitHub Packages introduced features for hosting Maven packages for free, but these require credentials even for public ones.
+GitHub Packages introduced features for hosting Maven packages for free, but these require credentials even for public
+ones.
 
-This grade plugin allows you to add a maven repository from GitHub Packages in one line. It also comes with a default personal access token, allowing the use of public repositories without any extra setup (see [Notes on automatic authentication](#notes-on-automatic-authentication)).
+This grade plugin allows you to add a maven repository from GitHub Packages in one line. It also comes with a default
+personal access token, allowing the use of public repositories without any extra setup
+(see [Notes on automatic authentication](#notes-on-automatic-authentication)).
 
 ## Usage
 
@@ -12,9 +15,9 @@ This grade plugin allows you to add a maven repository from GitHub Packages in o
 
 Using the plugins DSL:
 
-```kotlin
+```groovy
 plugins {
-    id("io.github.0ffz.github-packages") version "1.x.x"
+    id 'me.jonathing.gradle.github-packages' version '2.0.0'
 }
 ```
 
@@ -22,24 +25,23 @@ plugins {
 <summary>Using legacy plugin application: </summary>
 <p>
 
-```kotlin
+```groovy
 buildscript {
-  repositories {
-    maven {
-      url = uri("https://plugins.gradle.org/m2/")
-    }
-  }
-  dependencies {
-    classpath("gradle.plugin.io.github.0ffz:gpr-for-gradle:1.x.x")
-  }
+   repositories {
+      maven { url = 'https://plugins.gradle.org/m2/' }
+   }
+
+   dependencies {
+      classpath 'gradle.plugin.me.jonathing.gradle:github-packages:2.0.0'
+   }
 }
 
-apply(plugin = "io.github.0ffz.github-packages")
+apply plugin: 'io.github.0ffz.github-packages'
 ```
 </p>
 </details>
 
-[You may find it on Gradle's plugin plugin portal](https://plugins.gradle.org/plugin/io.github.0ffz.github-packages) 
+[You may find it on Gradle's plugin plugin portal](https://plugins.gradle.org/plugin/me.jonathing.gradle.github-packages) 
 
 
 ### Groovy
@@ -48,13 +50,11 @@ Within Groovy, you may add a package repository as follows:
 
 ```groovy
 repositories {
-    maven githubPackage.invoke("owner/repo")
-   // Or for all packages under the owner/org
-    maven githubPackage.invoke("owner")
+    maven githubPackage.maven('owner/repo')
+    // Or for all packages under the owner/org
+    maven githubPackage.maven('owner')
 }
 ```
-
-There is currently no support for further customization in Groovy.
 
 ### Kotlin
 
@@ -62,38 +62,39 @@ Add the GitHub repo to the repositories block:
 
 ```kotlin
 repositories {
-    githubPackage("owner/repo")
+    maven githubPackage("owner/repo")
     // Or for all packages under the owner/org
-    githubPackage("owner")
+    maven githubPackage("owner")
 }
 ```
 
 #### Modifying default username/key
 
-Use the `githubPackages` blocks above `repositories` to edit the template applied to every package below. Example to change credentials of every repo:
+Use the `template` block within the `githubPackage` extension above `repositories` to edit the template applied to every
+package below.
 
-```kotlin
-githubPackages {
+```groovy
+githubPackage.template {
     credentials {
-        username = "name"
-        password = "token"
+        username = 'name'
+        password = 'token'
     }
 }
 
 repositories {
-    githubPackage("owner/repo") //now with different credentials!
+    maven githubPackage.maven('owner/repo') //now with different credentials!
 }
 ```
 
 You may also modify each package declaration as you would a regular maven repository:
 
-```kotlin
+```groovy
 repositories {
-    githubPackage("owner/repo"){
-        name = "anotherName"
+    maven githubPackage.maven('owner/repo') {
+        name = 'anotherName'
         credentials {
-            username = "name"
-            password = "token"
+            username = 'name'
+            password = 'token'
         }
     }
 }
@@ -101,7 +102,12 @@ repositories {
 
 ## Notes on automatic authentication
 
-It appears sharing a PAT is currently the encouraged solution, as seen by [this post](https://github.community/t/download-from-github-package-registry-without-authentication/14407/38) from a staff member on the GitHub community forms. In a worst case scenario, the plugin will send a detailed message explaining exactly how to set up a token.
+It appears sharing a PAT is currently the encouraged solution, as seen by
+[this post](https://web.archive.org/web/20210121141140/https://github.community/t/download-from-github-package-registry-without-authentication/14407)
+from a staff member on the GitHub community forms. The ability to anonymously access GitHub Packages is
+[not planned](https://github.com/orgs/community/discussions/26634#discussioncomment-8527086).
+
+In the worst case, the plugin will send a detailed message explaining exactly how to set up a token.
 
 ### Manual token setup
 
@@ -117,8 +123,3 @@ It appears sharing a PAT is currently the encouraged solution, as seen by [this 
 For more info see this [GitHub docs](https://docs.github.com/en/packages/using-github-packages-with-your-projects-ecosystem/configuring-gradle-for-use-with-github-packages#authenticating-to-github-packages) page.
 
 `GITHUB_ACTOR` and `GITHUB_TOKEN` will be used within GitHub workflows, unless the username and password are manually changed.
-
-# Plans
-
-- Make extension functions work nicely with Groovy (feel free to open a PR for it)
-- Archive this project if Github Packages improve support for maven

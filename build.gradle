@@ -2,7 +2,6 @@ plugins {
     id 'java-gradle-plugin'
     id 'idea'
     id 'eclipse'
-    id 'signing'
     id 'maven-publish'
     alias libs.plugins.github.packages
     alias libs.plugins.gradleutils
@@ -12,7 +11,7 @@ plugins {
 final projectDisplayName = 'Gradle Github Packages Plugin'
 description = 'Gradle plugin for adding maven repos on Github Packages in one line'
 group = 'me.jonathing.gradle'
-version = '2.0.0'
+version = gitversion.tagOffset
 
 println "Version: $version"
 
@@ -34,15 +33,9 @@ changelog {
     publishAll = false
 }
 
-signing {
-    useGpgCmd()
-}
-
 gradlePlugin {
-//    website.set gitversion.url
-//    vcsUrl.set gitversion.url + '.git'
-    website = 'https://github.com/0ffz/gpr-for-gradle'
-    vcsUrl = 'https://github.com/0ffz/gpr-for-gradle.git'
+    website.set gitversion.url
+    vcsUrl.set gitversion.url + '.git'
 
     plugins.register('github-packages') {
         id = 'me.jonathing.gradle.github-packages'
